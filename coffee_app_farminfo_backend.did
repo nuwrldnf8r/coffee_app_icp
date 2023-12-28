@@ -19,6 +19,6 @@ service : {
   get_farm : (text) -> (opt Farm) query;
   get_farms : () -> (vec Farm) query;
   get_worker : (text, text) -> (opt Person) query;
+  update_farmer : (text, text, text, text, Role, text) -> () query;
   update_worker : (text, text, text, Role, text) -> ();
-  get_workers : (text) -> (vec Person) query;
 }

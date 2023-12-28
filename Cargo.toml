@@ -1,0 +1,4 @@
+[workspace]
+members = [
+    "src/coffee_app_farminfo_backend",
+]

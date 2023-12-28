@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "coffee_app_farminfo_backend": {
+      "candid": "src/coffee_app_farminfo_backend/coffee_app_farminfo_backend.did",
+      "package": "coffee_app_farminfo_backend",
+      "type": "rust"
+    },
+    "coffee_app_farminfo_frontend": {
+      "dependencies": [
+        "coffee_app_farminfo_backend"
+      ],
+      "source": [
+        "src/coffee_app_farminfo_frontend/assets"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

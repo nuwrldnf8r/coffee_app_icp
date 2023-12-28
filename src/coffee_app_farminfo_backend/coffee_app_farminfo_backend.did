@@ -1,3 +1,6 @@
+type Farm = record { name : text; geohash : text; farmer : text };
 service : {
-    "greet": (text) -> (text) query;
+  add_farm : (text, text) -> ();
+  get_farm : (text) -> (opt Farm) query;
+  get_farms : () -> (vec Farm) query;
 }

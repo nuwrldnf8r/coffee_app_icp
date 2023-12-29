@@ -13,6 +13,7 @@ type Role = variant {
   FarmManager;
   FactoryManager;
   FieldManager;
+  Scout;
 };
 service : {
   add_farm : (text, text) -> ();

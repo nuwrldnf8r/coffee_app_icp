@@ -35,7 +35,8 @@ enum Role{
     FieldManager,
     FactoryManager,
     ReceivingManager,
-    Harvester
+    Harvester,
+    Scout,
 }
 
 thread_local! {

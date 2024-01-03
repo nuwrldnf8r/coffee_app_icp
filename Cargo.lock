@@ -113,8 +113,10 @@ name = "coffee_app_farminfo_backend"
 version = "0.1.0"
 dependencies = [
  "candid",
+ "digest",
  "ic-cdk",
  "serde",
+ "sha2",
 ]
 
 [[package]]

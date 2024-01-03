@@ -22,4 +22,9 @@ service : {
   get_worker : (text, text) -> (opt Person) query;
   update_worker : (text, text, text, Role, text) -> ();
   get_workers : (text) -> (vec Person) query;
+  id: () -> (text) query;
+  get_farm_from_workerid : (text) -> (opt Farm) query;
+  get_workers_from_workerid : (text) -> (vec Person) query;
+  delete_worker : (text) -> ();
+  delete_farm : (text) -> ();
 }

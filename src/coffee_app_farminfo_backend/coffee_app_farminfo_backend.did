@@ -1,4 +1,4 @@
-type Farm = record { name : text; geohash : text; farmer : text };
+type Farm = record { name : text; metadata : text; farmer : text };
 type Person = record {
   id : text;
   image_cid : text;

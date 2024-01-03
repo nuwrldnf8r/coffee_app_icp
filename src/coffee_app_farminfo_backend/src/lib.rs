@@ -19,7 +19,7 @@ type FarmLookup = BTreeMap<String,[u8; 32]>;
 #[derive(Clone, Debug, CandidType)]
 struct Farm {
     pub name: String,
-    pub geohash: String,
+    pub metadata: String,
     pub farmer: String,
 }
 
@@ -75,7 +75,7 @@ fn get_farm_from_id(id: &[u8; 32]) -> Option <Farm>{
 }
 
 #[update]
-fn add_farm(name: String, geohash: String) {
+fn add_farm(name: String, metadata: String) {
     match get_farm(name.clone()){
         Some(_) => {
             panic!("{} already exists",name);
@@ -85,7 +85,7 @@ fn add_farm(name: String, geohash: String) {
             let key = name.clone();
             let new_farm = Farm{
                 name,
-                geohash,
+                metadata,
                 farmer: farmer_id,
             };
             FARMS_STORE.with(|farms_store| {

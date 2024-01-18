@@ -6,6 +6,12 @@ type Person = record {
   role : Role;
   approved : bool;
 };
+type Data  = record {
+    id: text;
+    farm_id: text;
+    ts: i64;
+    metadata: text;
+};
 type Role = variant {
   Farmer;
   Harvester;
@@ -21,4 +27,7 @@ service : {
   get_worker : (text, text) -> (opt Person) query;
   update_farmer : (text, text, text, text, Role, text) -> () query;
   update_worker : (text, text, text, Role, text) -> ();
+  add_data: (text, int64, text, text) -> ();
+  get_data_by_id: (text) -> (Data);
+  get_data_by_farm: (text, int64, int64) -> (vec Data);
 }

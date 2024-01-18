@@ -1,4 +1,4 @@
-type Farm = record { name : text; geohash : text; farmer : text };
+type Farm = record { name : text; metadata : text; farmer : text };
 type Person = record {
   id : text;
   image_cid : text;
@@ -8,8 +8,8 @@ type Person = record {
 };
 type Data  = record {
     id: text;
-    farm_id: text;
-    ts: i64;
+    farm_id: blob;
+    ts: int64;
     metadata: text;
 };
 type Role = variant {
@@ -25,9 +25,13 @@ service : {
   get_farm : (text) -> (opt Farm) query;
   get_farms : () -> (vec Farm) query;
   get_worker : (text, text) -> (opt Person) query;
-  update_farmer : (text, text, text, text, Role, text) -> () query;
+  get_workers : (text) -> (vec Person) query;
+  get_workers_from_workerid : (text) -> (vec Person) query;
+  get_farm_from_workerid : (text) -> (opt Farm) query;
+  update_farmer : (text, text, text, text, Role, text) -> ();
   update_worker : (text, text, text, Role, text) -> ();
   add_data: (text, int64, text, text) -> ();
   get_data_by_id: (text) -> (Data);
   get_data_by_farm: (text, int64, int64) -> (vec Data);
+  id : () -> (text) query;
 }

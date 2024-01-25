@@ -34,4 +34,5 @@ service : {
   get_data_by_id: (text) -> (Data);
   get_data_by_farm: (text, int64, int64) -> (vec Data);
   id : () -> (text) query;
+  geo_search: (text, float64) -> (vec text);
 }

@@ -10,6 +10,8 @@ use std::vec::Vec;
 use digest::Digest;
 use sha2::Sha256;
 
+mod geo_index;
+
 
 type FarmsStore = BTreeMap<[u8; 32], Farm>;
 type WorkersStore = BTreeMap<[u8; 32], BTreeMap<String, Person>>;
@@ -348,6 +350,11 @@ fn get_data_by_farm(farm: String, ts_start: i64, ts_end: i64) -> Vec<Data>{
             empty
         }
     })
+}
+
+#[query]
+fn geo_search(geohash: String, distance: f64) -> Vec<String>{
+    geo_index::find(geohash, distance)
 }
 
 

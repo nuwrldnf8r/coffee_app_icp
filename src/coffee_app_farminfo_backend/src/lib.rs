@@ -11,6 +11,7 @@ use digest::Digest;
 use sha2::Sha256;
 
 mod geo_index;
+mod id_tools;
 
 
 type FarmsStore = BTreeMap<[u8; 32], Farm>;
@@ -295,6 +296,12 @@ fn index_data(id: [u8; 32], ts: i64, farm_id: [u8; 32]) {
 
 #[update]
 fn add_data(id: String, ts: i64, farm: String, metadata: String) {
+    let geohash: String;
+    let _geohash = id_tools::geohash_from_id(&id);
+    match _geohash{
+        Ok(g)=>geohash=g,
+        _=>panic!("Invalid id")
+    }
     let caller_id = ic_cdk::api::caller().to_string();
     let _farm = get_farm_from_workerid(caller_id);
     if _farm.unwrap().name != farm.clone() {
@@ -315,6 +322,7 @@ fn add_data(id: String, ts: i64, farm: String, metadata: String) {
             };
             mut_data_store.insert(_id.clone(), data);
             index_data(_id,ts,farm_id);
+            geo_index::index(geohash,id);
         } else {
             panic!("Data for this id already exists");
         }

@@ -1,7 +1,4 @@
 use geohash::{encode, decode, neighbor, Direction, Coord};
-use ic_cdk::{
-    query, update
-};
 //use std::borrow::Borrow;
 use std::collections::BTreeMap;
 use std::vec::Vec;

@@ -12,7 +12,7 @@ use std::cell::RefCell;
 const EARTH_RADIUS: f64 = 6_371_000.0;
 
 type GeoIndex = BTreeMap<[u8; 32],Vec<String>>; //Vec<[u8; 32]>
-type GeoHashLookup = BTreeMap<String,[u8; 32]>;
+type GeoHashLookup = BTreeMap<String,String>;
 
 thread_local! {
     static GEO_INDEX: RefCell<GeoIndex> = RefCell::default();
@@ -36,9 +36,8 @@ fn encode_coords(c: Coord, size: usize) -> String {
 }
 
 fn _index_lookup(geohash: &String, id:&String){
-    let _geohash = get_id(geohash);
     GEO_HASH_LOOKUP.with(|geo_hash_lookup|{
-        geo_hash_lookup.borrow_mut().insert(id.clone(),_geohash);
+        geo_hash_lookup.borrow_mut().insert(id.to_string(),geohash.to_string());
     })
 }
 
@@ -47,16 +46,15 @@ fn lookup(id: &String) -> String{
     let _id = get_id(id);
     GEO_HASH_LOOKUP.with(|geo_hash_lookup|{
         let _geo_hash_lookup = geo_hash_lookup.borrow();
-        let geohash_id = _geo_hash_lookup.get(id).unwrap();
-        GEO_INDEX.with(|geo_index|{
-            let _geo_index = geo_index.borrow();
-            let ar = _geo_index.get(geohash_id);
-            if let Some(element) = ar.unwrap().get(0){
-                element.to_string()
-            } else {
+        let result = _geo_hash_lookup.get(id);
+        match result{
+            Some(geohash)=>{
+                geohash.to_string()
+            },
+            None => {
                 panic!("element does not exist");
             }
-        })
+        }
     })
 }
 
@@ -68,8 +66,13 @@ fn _index(geohash_ar: Vec<String>, id:&String ) { //
             let key = get_id(&geohash);
             if index_mut.contains_key(&key){        
                 let v = index_mut.get_mut(&key).unwrap();
-                v.push(id.to_string());
-                
+                let find = v.iter().find(|&s| s == id);
+                match find{
+                    Some(_)=>{},
+                    None => {
+                        v.push(id.to_string());
+                    }
+                }
                 
             } else {
                 let mut v: Vec<String> = Vec::new();
@@ -119,10 +122,10 @@ fn get_precision(distance: &f64) -> usize{
         4
     } else if distance > 1.2 && distance < 4.9 {
         5
-    } else if distance > 0.152 && distance < 1.2 {
+    } else if distance < 1.2 {
         6
     } else {
-        2
+        1
     }
 }
 
@@ -140,14 +143,20 @@ fn haversine(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 
 fn get_distance(coord1: &Coord, geohash2: &String) -> f64{
     let (coord2, _, _) = decode(geohash2).unwrap();
-    haversine(coord1.x, coord1.y, coord2.x, coord2.y)*0.001 //returns distance in kilometers
+    haversine(coord1.x, coord1.y, coord2.x, coord2.y)/1000.0 //returns distance in kilometers
 }
 
+fn in_radius(c: &Coord, radius: &f64, id: &String) -> bool{
+    let geohash2 = lookup(id);
+    let dist = get_distance(c,&geohash2);
+    dist<=radius.clone()
+}
 
 pub fn index(geohash: String, id: String) {
     //let id = get_id(&id);
     let (c,_,_) = decode(&geohash).unwrap();
     let to_index: Vec<String> = vec![
+        encode_coords(c.clone(),1),
         encode_coords(c.clone(),2),
         encode_coords(c.clone(),3),
         encode_coords(c.clone(),4),
@@ -177,7 +186,9 @@ pub fn find(geohash: String, distance: f64) -> Vec<String>{ //distance is in kil
     ];
     let _ids = get(_geohash.clone());
     for id in _ids{
-        ret.push(id);
+        if in_radius(&c,&distance,&id) {
+            ret.push(id);
+        }
     }
     for direction in &directions {
         let _neighbor = neighbor(&_geohash, *direction);
@@ -185,10 +196,7 @@ pub fn find(geohash: String, distance: f64) -> Vec<String>{ //distance is in kil
             Ok(n)=>{
                 let _ids = get(n);
                 for id in _ids{
-                    
-                    let geohash2 = lookup(&id);
-                    let dist = get_distance(&c,&geohash2);
-                    if dist<=distance{
+                    if in_radius(&c,&distance,&id){
                         ret.push(id);
                     }
                 }
